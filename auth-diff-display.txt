@@ -1,0 +1,364 @@
+diff --git a/discord-clone/apps/web/src/components/AuthScreen.tsx b/discord-clone/apps/web/src/components/AuthScreen.tsx
+index 5290d0b..1d5e9ed 100644
+--- a/discord-clone/apps/web/src/components/AuthScreen.tsx
++++ b/discord-clone/apps/web/src/components/AuthScreen.tsx
+@@ -1,14 +1,30 @@
++import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
++import {
++  faCalendarDays,
++  faCheckCircle,
++  faEnvelope,
++  faLock,
++  faQrcode,
++  faUser,
++} from "@fortawesome/free-solid-svg-icons";
++import { faDiscord } from "@fortawesome/free-brands-svg-icons";
++import backgroundImage from "./background.png";
++
+ type Props = {
+   mode: "login" | "register";
+   email: string;
++  displayName: string;
+   username: string;
+   password: string;
++  birthDate: { month: string; day: string; year: string };
+   error: string;
+   loading: boolean;
+   setMode: (mode: "login" | "register") => void;
+   setEmail: (value: string) => void;
++  setDisplayName: (value: string) => void;
+   setUsername: (value: string) => void;
+   setPassword: (value: string) => void;
++  setBirthDate: (date: { month: string; day: string; year: string }) => void;
+   login: () => void;
+   register: () => void;
+ };
+@@ -16,79 +32,267 @@ type Props = {
+ export function AuthScreen({
+   mode,
+   email,
++  displayName,
+   username,
+   password,
++  birthDate,
+   error,
+   loading,
+   setMode,
+   setEmail,
++  setDisplayName,
+   setUsername,
+   setPassword,
++  setBirthDate,
+   login,
+   register,
+ }: Props) {
+   return (
+-    <div className="min-h-screen bg-[#313338] text-white flex items-center justify-center">
+-      <div className="w-[420px] bg-[#2b2d31] p-8 rounded-md shadow-2xl">
+-        <h1 className="text-2xl font-bold mb-2 text-center">
+-          {mode === "login" ? "Welcome back!" : "Create an account"}
+-        </h1>
+-
+-        <p className="text-[#b5bac1] mb-6 text-center">
+-          {mode === "login"
+-            ? "Login to your chat workspace"
+-            : "Register to start chatting"}
+-        </p>
+-
+-        {mode === "register" && (
+-          <>
+-            <label className="text-xs font-bold text-[#b5bac1]">USERNAME</label>
+-            <input
+-              className="w-full mt-2 mb-4 px-3 py-2 bg-[#1e1f22] rounded outline-none text-[#dbdee1] focus:ring-2 focus:ring-[#5865f2]"
+-              value={username}
+-              onChange={(e) => setUsername(e.target.value)}
+-            />
+-          </>
+-        )}
+-
+-        <label className="text-xs font-bold text-[#b5bac1]">EMAIL</label>
+-        <input
+-          className="w-full mt-2 mb-4 px-3 py-2 bg-[#1e1f22] rounded outline-none text-[#dbdee1] focus:ring-2 focus:ring-[#5865f2]"
+-          value={email}
+-          onChange={(e) => setEmail(e.target.value)}
+-        />
+-
+-        <label className="text-xs font-bold text-[#b5bac1]">PASSWORD</label>
+-        <input
+-          className="w-full mt-2 mb-6 px-3 py-2 bg-[#1e1f22] rounded outline-none text-[#dbdee1] focus:ring-2 focus:ring-[#5865f2]"
+-          type="password"
+-          value={password}
+-          onChange={(e) => setPassword(e.target.value)}
+-        />
+-
+-        <button
+-          disabled={loading}
+-          onClick={() => {
+-            if (mode === "login") login();
+-            else register();
+-          }}
+-          className="w-full bg-[#5865f2] hover:bg-[#4752c4] py-2 rounded font-semibold disabled:opacity-60"
+-        >
+-          {loading ? "Please wait..." : mode === "login" ? "Log In" : "Register"}
+-        </button>
+-
+-        {error ? (
+-          <p className="mt-3 text-sm text-[#ff6b6b]">{error}</p>
+-        ) : null}
+-
+-        <button
+-          onClick={() => setMode(mode === "login" ? "register" : "login")}
+-          className="mt-4 text-sm text-[#5865f2] hover:underline"
+-        >
+-          {mode === "login"
+-            ? "Need an account? Register"
+-            : "Already have an account? Log in"}
+-        </button>
++    <div
++      className="relative min-h-screen overflow-hidden bg-transparent text-white"
++      style={{
++        backgroundImage: `url(${backgroundImage})`,
++        backgroundSize: "cover",
++        backgroundPosition: "center",
++      }}
++    >
++      <div className="pointer-events-none absolute inset-0" />
++
++      <div className="relative z-10 mx-auto flex min-h-screen w-full items-center justify-center px-4 py-12">
++        <div className="w-full rounded-2xl bg-[#36393f] p-6 shadow-2xl shadow-black/40 md:p-8" style={{ maxWidth: "1060px" }}>
++          <div className="grid gap-6 xl:grid-cols-[1.3fr_1fr]">
++            <div className="rounded-[2rem] border border-white/10 bg-[#202225] p-8 text-white shadow-inner shadow-black/40">
++              <div className="flex flex-col items-center justify-center gap-6 text-center">
++                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#5865f2]/15 text-[#5865f2] shadow-lg shadow-[#5865f2]/15">
++                  <FontAwesomeIcon icon={faDiscord} className="text-[3.5rem]" />
++                </div>
++                <div>
++                  <h1 className="text-4xl font-bold tracking-tight">Welcome to Discord clone</h1>
++                  <p className="mt-4 text-sm text-[#b9bbbe] leading-6">
++                    Connect with communities, join servers with invite codes, and chat with friends in a clean, modern interface.
++                  </p>
++                </div>
++              </div>
++
++              <div className="mt-10 grid gap-4">
++                {[
++                  { icon: faCheckCircle, label: "Fast server invites" },
++                  { icon: faCheckCircle, label: "Real-time chat and DMs" },
++                  { icon: faCheckCircle, label: "FontAwesome-powered icons" },
++                ].map((item) => (
++                  <div key={item.label} className="flex items-center gap-3 rounded-3xl bg-[#2a2d31] p-4">
++                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#5865f2] text-white">
++                      <FontAwesomeIcon icon={item.icon} />
++                    </div>
++                    <p className="text-sm text-[#d7d8da]">{item.label}</p>
++                  </div>
++                ))}
++              </div>
++
++              <div className="mt-10 rounded-[1.75rem] bg-[#2f3138] p-6 text-left">
++                <h2 className="text-lg font-semibold text-white">Sign in with QR</h2>
++                <p className="mt-3 text-sm text-[#b9bbbe]">
++                  Scan the code with the Discord mobile app for instant access.
++                </p>
++                <div className="mt-5 flex items-center justify-center rounded-3xl border border-white/10 bg-white/10 p-6">
++                  <FontAwesomeIcon icon={faQrcode} className="text-4xl text-[#5865f2]" />
++                </div>
++              </div>
++            </div>
++
++            <div className="rounded-[2rem] bg-[#2f3138] p-8 shadow-inner shadow-black/20">
++              {mode === "login" ? (
++                <>
++                  <div className="text-center">
++                    <h2 className="text-3xl font-semibold text-white">Welcome back!</h2>
++                    <p className="mt-2 text-sm text-[#b9bbbe]">We&apos;re so excited to see you again.</p>
++                  </div>
++
++                  <div className="mt-8 space-y-5">
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faEnvelope} className="text-[#5865f2]" />
++                        Email or Phone Number <span className="text-[#f04747]">*</span>
++                      </label>
++                      <input
++                        className="mt-3 w-full rounded-2xl border border-white/10 bg-[#23252a] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5865f2] focus:ring-2 focus:ring-[#5865f2]/40"
++                        value={email}
++                        onChange={(e) => setEmail(e.target.value)}
++                      />
++                    </div>
++
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faLock} className="text-[#5865f2]" />
++                        Password <span className="text-[#f04747]">*</span>
++                      </label>
++                      <input
++                        type="password"
++                        className="mt-3 w-full rounded-2xl border border-white/10 bg-[#23252a] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5865f2] focus:ring-2 focus:ring-[#5865f2]/40"
++                        value={password}
++                        onChange={(e) => setPassword(e.target.value)}
++                      />
++                    </div>
++
++                    {error ? <p className="text-sm text-[#ff6b6b]">{error}</p> : null}
++
++                    <button
++                      disabled={loading}
++                      onClick={login}
++                      className="mt-4 w-full rounded-full bg-[#5865f2] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4752c4] disabled:cursor-not-allowed disabled:opacity-60"
++                    >
++                      {loading ? "Please wait..." : "Log In"}
++                    </button>
++
++                    <div className="pt-3 text-sm text-[#b9bbbe]">
++                      <button
++                        type="button"
++                        onClick={() => setMode("register")}
++                        className="font-medium text-[#5865f2] cursor-pointer"
++                      >
++                        <span className="text-[#b9bbbe]">Need an account?</span> Register
++                      </button>
++                    </div>
++                  </div>
++                </>
++              ) : (
++                <>
++                  <div className="text-center">
++                    <h2 className="text-3xl font-semibold text-white">Create an account</h2>
++                    <p className="mt-2 text-sm text-[#b9bbbe]">Join your friends on this Discord clone.</p>
++                  </div>
++
++                  <div className="mt-8 space-y-5">
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faEnvelope} className="text-[#5865f2]" />
++                        Email <span className="text-[#f04747]">*</span>
++                      </label>
++                      <input
++                        className="mt-3 w-full rounded-2xl border border-white/10 bg-[#23252a] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5865f2] focus:ring-2 focus:ring-[#5865f2]/40"
++                        type="email"
++                        value={email}
++                        onChange={(e) => setEmail(e.target.value)}
++                      />
++                    </div>
++
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faUser} className="text-[#5865f2]" />
++                        Display Name
++                      </label>
++                      <input
++                        className="mt-3 w-full rounded-2xl border border-white/10 bg-[#23252a] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5865f2] focus:ring-2 focus:ring-[#5865f2]/40"
++                        value={displayName}
++                        onChange={(e) => setDisplayName(e.target.value)}
++                      />
++                    </div>
++
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faUser} className="text-[#5865f2]" />
++                        Username <span className="text-[#f04747]">*</span>
++                      </label>
++                      <input
++                        className="mt-3 w-full rounded-2xl border border-white/10 bg-[#23252a] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5865f2] focus:ring-2 focus:ring-[#5865f2]/40"
++                        value={username}
++                        onChange={(e) => setUsername(e.target.value)}
++                      />
++                    </div>
++
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faLock} className="text-[#5865f2]" />
++                        Password <span className="text-[#f04747]">*</span>
++                      </label>
++                      <input
++                        type="password"
++                        className="mt-3 w-full rounded-2xl border border-white/10 bg-[#23252a] px-4 py-3 text-sm text-white outline-none transition focus:border-[#5865f2] focus:ring-2 focus:ring-[#5865f2]/40"
++                        value={password}
++                        onChange={(e) => setPassword(e.target.value)}
++                      />
++                    </div>
++
++                    <div>
++                      <label className="flex items-center gap-2 text-sm font-semibold text-[#b9bbbe]">
++                        <FontAwesomeIcon icon={faCalendarDays} className="text-[#5865f2]" />
++                        Date of Birth <span className="text-[#f04747]">*</span>
++                      </label>
++                      <div className="mt-3 grid grid-cols-3 gap-3">
++                        <select
++                          className="rounded-2xl border border-white/10 bg-[#23252a] px-3 py-3 text-sm text-white outline-none transition focus:border-[#5865f2]"
++                          value={birthDate.month}
++                          onChange={(e) => setBirthDate({ ...birthDate, month: e.target.value })}
++                        >
++                          <option value="">Month</option>
++                          <option value="01">January</option>
++                          <option value="02">February</option>
++                          <option value="03">March</option>
++                          <option value="04">April</option>
++                          <option value="05">May</option>
++                          <option value="06">June</option>
++                          <option value="07">July</option>
++                          <option value="08">August</option>
++                          <option value="09">September</option>
++                          <option value="10">October</option>
++                          <option value="11">November</option>
++                          <option value="12">December</option>
++                        </select>
++                        <select
++                          className="rounded-2xl border border-white/10 bg-[#23252a] px-3 py-3 text-sm text-white outline-none transition focus:border-[#5865f2]"
++                          value={birthDate.day}
++                          onChange={(e) => setBirthDate({ ...birthDate, day: e.target.value })}
++                        >
++                          <option value="">Day</option>
++                          {Array.from({ length: 31 }, (_, i) => (
++                            <option key={i + 1} value={String(i + 1).padStart(2, "0")}> 
++                              {i + 1}
++                            </option>
++                          ))}
++                        </select>
++                        <select
++                          className="rounded-2xl border border-white/10 bg-[#23252a] px-3 py-3 text-sm text-white outline-none transition focus:border-[#5865f2]"
++                          value={birthDate.year}
++                          onChange={(e) => setBirthDate({ ...birthDate, year: e.target.value })}
++                        >
++                          <option value="">Year</option>
++                          {Array.from({ length: 100 }, (_, i) => {
++                            const year = new Date().getFullYear() - i;
++                            return (
++                              <option key={year} value={String(year)}>
++                                {year}
++                              </option>
++                            );
++                          })}
++                        </select>
++                      </div>
++                    </div>
++
++                    {error ? <p className="text-sm text-[#ff6b6b]">{error}</p> : null}
++
++                    <button
++                      disabled={loading}
++                      onClick={register}
++                      className="mt-4 w-full rounded-full bg-[#5865f2] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4752c4] disabled:cursor-not-allowed disabled:opacity-60"
++                    >
++                      {loading ? "Creating account..." : "Create account"}
++                    </button>
++
++                    <div className="pt-3 text-sm text-[#b9bbbe]">
++                      <button
++                        type="button"
++                        onClick={() => setMode("login")}
++                        className="font-medium text-[#5865f2] cursor-pointer"
++                      >
++                        <span className="text-[#b9bbbe]">Already have an account?</span> Log in
++                      </button>
++                    </div>
++                  </div>
++                </>
++              )}
++            </div>
++          </div>
++        </div>
+       </div>
+     </div>
+   );

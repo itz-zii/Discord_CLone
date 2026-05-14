@@ -1,0 +1,18 @@
+export const ui = {
+  bg: "#313338",
+  serverBar: "#1e1f22",
+  sidebar: "#2b2d31",
+  panel: "#232428",
+  input: "#383a40",
+  hover: "#35373c",
+  active: "#404249",
+  primary: "#5865f2",
+  primaryHover: "#4752c4",
+  danger: "#f23f43",
+  success: "#23a55a",
+  offline: "#80848e",
+  text: "#f2f3f5",
+  textSoft: "#dbdee1",
+  textMuted: "#b5bac1",
+  textDim: "#949ba4",
+};
